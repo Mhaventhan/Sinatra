@@ -30,59 +30,55 @@ class PostsController < Sinatra::Base
 
   get "/" do
     @title = "Blog posts"
-    @post = $posts
+    @posts = Post.all
     erb :'posts/index'
+
   end
 
   get '/new' do
     @title = "New post"
-    @post = {
-      id:'',
-      title: '',
-      post_body: ''
-    }
+    @post = Post.new
     erb :'posts/new'
   end
 
   get '/:id' do
     id = params[:id].to_i
-    @post = $posts[id]
+    @post = Post.find(id)
     erb :'posts/show'
 
   end
   get '/:id/edit' do
-    @title = 'edit'
+    @title = 'Edit '
     id = params[:id].to_i
-    @post = $posts[id]
+    @post = Post.find(id)
 
     erb :'posts/edit'
 
   end
 
   post '/' do
-    new_post = {
-      id: $posts.length,
-      title: params[:title],
-      post_body: params[:post_body]
-    }
-    $posts.push(new_post)
+    post = Post.new
+    post.title = params[:title]
+    post.post_body = params[:post_body]
+
+    post.save
     redirect '/'
   end
 
   put "/:id" do
     id = params[:id].to_i
-    post = $posts[id]
-    post[:title] = params[:title]
-    post[:post_body] = params[:post_body]
+    post = Post.find(id)
+    post.title = params[:title]
+    post.post_body = params[:post_body]
 
-    $posts[id] = post
+    post.save
 
     redirect '/'
   end
 
   delete '/:id' do
     id = params[:id].to_i
-    $posts.delete_at(id)
+    Post.destory(id)
     redirect '/'
   end
 
